@@ -37,9 +37,12 @@ class Cart {
     }
   }
 
+  bool get isEmpty => _items.isEmpty;
+
   double total() => _items.values
       .map((item) => item.price)
       .reduce((value, element) => value + element);
+
 
   @override
   String toString() {
@@ -77,7 +80,9 @@ void main() {
     } else if(line == 'v') {
       print(cart);
     } else if(line == 'c') {
-      //TODO: implement
+      if(checkout(cart)) {
+        break;
+      }
     }
   }
 }
@@ -94,4 +99,30 @@ Product? chooseProduct() {
   }
     print('Not found');
     return null;
+}
+
+bool checkout(cart) {
+  if(cart.isEmpty) {
+    print('The cart is empty');
+    return false;
+  }
+  final total = cart.total();
+  print('Total: \$$total');
+  stdout.write('Payment in cash: ');
+  final line = stdin.readLineSync();
+  if(line == null || line.isEmpty) {
+    return false;
+  }
+  final payed = double.tryParse(line);
+  if(payed == null) {
+    return false;
+  }
+  if(payed >= total) {
+    final change = payed - total;
+    print('Change: \$${change.toStringAsFixed(2)}');
+    return true;
+  } else {
+    print('Not enough cash');
+    return false;
+  }
 }
